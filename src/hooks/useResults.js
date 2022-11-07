@@ -6,7 +6,7 @@ export default () => {
     const [errMessage, setErrMessage] = useState('');
 
     useEffect(() => {
-        searchApi('pasta');
+        searchApi('');
     }, []);
 
     const searchApi = async (searchTerm) => {
