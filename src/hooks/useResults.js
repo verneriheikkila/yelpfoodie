@@ -1,5 +1,8 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import yelp from '../api/yelp';
+import * as Location from 'expo-location';
+import { Alert } from 'react-native';
 
 export default () => {
     const [results, setResults] = useState([]);
@@ -10,12 +13,21 @@ export default () => {
     }, []);
 
     const searchApi = async (searchTerm) => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('No permission to get location');
+            return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+
         try {
             const response = await yelp.get('/search', {
                 params: {
                     limit: 50,
                     term: searchTerm,
-                    location: 'helsinki',
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    radius: 10_000,
                 },
             });
             setResults(response.data.businesses);
